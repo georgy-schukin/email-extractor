@@ -1,4 +1,4 @@
-from email_crawler import EmailCrawler
+from crawlers.email_crawler import EmailCrawler
 
 
 class ScienceDirectCrawler(EmailCrawler):

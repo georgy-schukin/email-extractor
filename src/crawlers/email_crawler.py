@@ -1,5 +1,5 @@
-from selenium_web_walker import SeleniumWebWalker
-from email_parser import EmailParser
+from walkers.selenium_web_walker import SeleniumWebWalker
+from parsers.email_parser import EmailParser
 
 
 class EmailCrawler(object):
@@ -26,8 +26,8 @@ class EmailCrawler(object):
         visited_urls = set()
         urls_to_visit.add(start_url)
         while len(urls_to_visit) > 0:
-            url = urls_to_visit.pop(0)
-            print("Process " + url)
+            url = urls_to_visit.pop()
+            print("Processing " + url)
             try:
                 self.walker.open(url)
             except Exception as e:
