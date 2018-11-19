@@ -27,7 +27,7 @@ def write_result(emails, filename):
 
 def main():
     url = input("Input url: ")
-    #url = "https://www.sciencedirect.com/journal/parallel-computing/vol/78/suppl/C"
+    #url = "https://link.springer.com/book/10.1007/978-3-319-67035-5"
     emails = extract_emails(url)
     write_result(emails, "output.txt")
     print('Done')
