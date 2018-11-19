@@ -22,7 +22,7 @@ class SeleniumWebWalker(object):
         try:
             self.driver.get(url)
             #self.driver.implicitly_wait(self.page_load_timeout)
-            time.sleep(5)
+            #time.sleep(5)
         except TimeoutException:
             raise Exception("Page load timeout: " + url)
 

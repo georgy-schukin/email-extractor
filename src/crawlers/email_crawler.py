@@ -1,6 +1,8 @@
 from walkers.selenium_web_walker import SeleniumWebWalker
 from parsers.email_parser import EmailParser
 
+import re
+
 
 class EmailCrawler(object):
     def __init__(self):
@@ -12,10 +14,10 @@ class EmailCrawler(object):
         self.parser = EmailParser()
 
     def set_patterns(self, patterns):
-        self.patterns = patterns
+        self.patterns = [re.compile(pattern) for pattern in patterns]
 
     def set_skip_patterns(self, patterns):
-        self.skip_patterns = patterns
+        self.skip_patterns = [re.compile(pattern) for pattern in patterns]
 
     def set_logging(self, logging):
         self.logging = logging
@@ -57,7 +59,7 @@ class EmailCrawler(object):
         if not self.patterns:
             return True
         for pattern in self.patterns:
-            if pattern in url:
+            if pattern.search(url):
                 return True
         return False
 
@@ -65,6 +67,6 @@ class EmailCrawler(object):
         if not self.skip_patterns:
             return False
         for pattern in self.skip_patterns:
-            if pattern in url:
+            if pattern.search(url):
                 return True
         return False
