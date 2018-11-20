@@ -10,7 +10,7 @@ class EmailCrawler(object):
         self.patterns = None
         self.skip_patterns = None
         self.logging = False
-        self.walker = SeleniumWebWalker(page_load_timeout=30)
+        self.walker = SeleniumWebWalker()
         self.parser = EmailParser()
 
     def set_patterns(self, patterns):
@@ -21,6 +21,9 @@ class EmailCrawler(object):
 
     def set_logging(self, logging):
         self.logging = logging
+
+    def set_page_load_timeout(self, page_load_timeout):
+        self.walker.set_page_load_timeout(page_load_timeout)
 
     def crawl(self, start_url):
         emails = set()
@@ -70,3 +73,6 @@ class EmailCrawler(object):
             if pattern.search(url):
                 return True
         return False
+
+    def close(self):
+        self.walker.close()
