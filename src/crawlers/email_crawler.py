@@ -25,14 +25,17 @@ class EmailCrawler(object):
     def set_page_load_timeout(self, page_load_timeout):
         self.walker.set_page_load_timeout(page_load_timeout)
 
-    def crawl(self, start_url):
+    def crawl(self, start_url, listeners):
         emails = set()
         urls_to_visit = set()
         visited_urls = set()
         urls_to_visit.add(start_url)
+        for listener in listeners:
+            listener.notify_start()
         while len(urls_to_visit) > 0:
             url = urls_to_visit.pop()
-            print("Processing " + url)
+            for listener in listeners:
+                listener.notify_url(url)
             try:
                 self.walker.open(url)
             except Exception as e:
@@ -41,12 +44,15 @@ class EmailCrawler(object):
             finally:
                 visited_urls.add(url)
             found_emails = self._extract_emails()
-            print("Emails: " + str(found_emails))
             for email in found_emails:
                 emails.add(email)
+                for listener in listeners:
+                    listener.notify_email(email)
             for u in self._extract_urls():
                 if u not in visited_urls:
                     urls_to_visit.add(u)
+        for listener in listeners:
+            listener.notify_end()
         return list(emails)
 
     def _extract_urls(self):

@@ -4,6 +4,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 import time
 
 
@@ -29,6 +30,14 @@ class SeleniumWebWalker(object):
 
         adblock_path = "/home/georgy/.config/google-chrome/Default/Extensions/cfhdojbkjhnklbpkdaibdccddilifddb/3.4.1_1/"
         options.add_argument("load-extension=" + adblock_path)
+
+        proxy_addr = "179.184.34.140:3128"
+        proxy = {"proxyType": "MANUAL",
+                 "httpProxy": proxy_addr,
+                 "ftpProxy": proxy_addr,
+                 "sslProxy": proxy_addr
+                 }
+        #caps["proxy"] = proxy
 
         return webdriver.Chrome(chrome_options=options, desired_capabilities=caps)
 
