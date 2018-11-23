@@ -5,19 +5,25 @@ import re
 
 
 class EmailCrawler(object):
-    def __init__(self):
+    def __init__(self, options):
         super().__init__()
-        self.patterns = None
-        self.skip_patterns = None
+        self.patterns = []
+        self.skip_patterns = []
         self.logging = False
-        self.walker = SeleniumWebWalker()
+        self.walker = SeleniumWebWalker(options)
         self.parser = EmailParser()
 
     def set_patterns(self, patterns):
         self.patterns = [re.compile(pattern) for pattern in patterns]
 
+    def add_patterns(self, patterns):
+        self.patterns += [re.compile(pattern) for pattern in patterns]
+
     def set_skip_patterns(self, patterns):
         self.skip_patterns = [re.compile(pattern) for pattern in patterns]
+
+    def add_skip_patterns(self, patterns):
+        self.skip_patterns += [re.compile(pattern) for pattern in patterns]
 
     def set_logging(self, logging):
         self.logging = logging

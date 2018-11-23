@@ -6,40 +6,48 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 import time
+import random
 
 
 class SeleniumWebWalker(object):
-    def __init__(self):
+    def __init__(self, options):
         super().__init__()
-        self.driver = self._init_driver()
+        self.driver = self._init_driver(options)
 
-    def _init_driver(self):
-        options = webdriver.ChromeOptions()
-        options.add_argument('--ignore-certificate-errors')
-        options.add_argument("--test-type")
-        #options.add_argument('--headless')
-        options.add_argument("--disable-infobars")
-        #options.add_argument("--incognito")
-        options.add_argument("--no-sandbox")
+    def _init_driver(self, options):
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--ignore-certificate-errors')
+        chrome_options.add_argument("--test-type")
+        chrome_options.add_argument("--disable-infobars")
+        chrome_options.add_argument("--no-sandbox")
+        # chrome_options.add_argument("--incognito")
 
         caps = DesiredCapabilities.CHROME
         caps["pageLoadStrategy"] = "normal"
 
-        prefs = {"profile.managed_default_content_settings.images": 2, 'disk-cache-size': 4096}
-        options.add_experimental_option("prefs", prefs)
+        prefs = {'disk-cache-size': 4096}
 
-        adblock_path = "/home/georgy/.config/google-chrome/Default/Extensions/cfhdojbkjhnklbpkdaibdccddilifddb/3.4.1_1/"
-        options.add_argument("load-extension=" + adblock_path)
+        if options.get("no-images"):
+            prefs["profile.managed_default_content_settings.images"] = 2
 
-        proxy_addr = "179.184.34.140:3128"
-        proxy = {"proxyType": "MANUAL",
-                 "httpProxy": proxy_addr,
-                 "ftpProxy": proxy_addr,
-                 "sslProxy": proxy_addr
-                 }
-        #caps["proxy"] = proxy
+        for ext_path in options.get("extensions", []):
+            chrome_options.add_argument("load-extension=" + ext_path)
 
-        return webdriver.Chrome(chrome_options=options, desired_capabilities=caps)
+        if options.get("proxy"):
+            proxy_addr = options.get("proxy")
+            proxy = {"proxyType": "MANUAL",
+                     "httpProxy": proxy_addr,
+                     "ftpProxy": proxy_addr,
+                     "sslProxy": proxy_addr
+                     }
+            caps["proxy"] = proxy
+
+        if options.get("headless"):
+            chrome_options.add_argument('--headless')
+
+        chrome_options.add_experimental_option("prefs", prefs)
+
+        return webdriver.Chrome(chrome_options=chrome_options, desired_capabilities=caps)
 
     def set_page_load_timeout(self, page_load_timeout):
         self.driver.set_page_load_timeout(page_load_timeout)
@@ -55,7 +63,7 @@ class SeleniumWebWalker(object):
             #element_present = expected_conditions.presence_of_element_located((By.TAG_NAME, 'body'))
             #WebDriverWait(self.driver, timeout=5).until(element_present)
             #self.driver.implicitly_wait(self.page_load_timeout)
-            #time.sleep(2)
+            #time.sleep(random.randint(0, 2))
         except TimeoutException:
             pass
             #raise Exception("Page load timeout: " + url)
