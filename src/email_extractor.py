@@ -7,6 +7,7 @@ from listeners.logger import Logger
 from listeners.file_writer import FileWriter
 
 import os.path
+import random
 
 
 def get_crawler(url, options):
@@ -49,18 +50,29 @@ def merge_results(input_files, output_file):
             f.write(line + "\n")
 
 
+def springer_journal(journal_id, volumes, issues, pages=range(1, 2)):
+    urls = []
+    for vol in volumes:
+        for issue in issues:
+            for page in pages:
+                urls.append("https://link.springer.com/journal/{0}/{1}/{2}/page/{3}".
+                            format(journal_id, vol, issue, page))
+    return urls
+
+
 def main():
     listeners = [Logger(), FileWriter("output.txt")]
 
     options = {
         "extensions": ["/home/georgy/.config/google-chrome/Default/Extensions/cfhdojbkjhnklbpkdaibdccddilifddb/3.4.1_1/"],
         "no-images": True,
-        "proxy": "185.6.167.99:51123"
+        "proxy": "176.106.18.60:40912",
+        "wait": lambda: random.randint(0, 2)
     }
 
-    url = input("Input url: ")
+    #url = input("Input url: ")
 
-    #urls = []
+    urls = []
 
     # Comm. in Computer
     #for page in range(1, 8):
@@ -70,9 +82,8 @@ def main():
     #for page in range(1, 18):
     #    urls.append("https://link.springer.com/search/page/{0}?facet-sub-discipline=%22Computer+Communication+Networks%22&facet-content-type=%22Book%22&date-facet-mode=between&facet-content-type=%22ConferenceProceedings%22&facet-series=%22558%22&facet-language=%22En%22&sortOrder=newestFirst&facet-end-year=2018&facet-sub-discipline=%22Information+Systems+Applications+%28incl.+Internet%29%22&facet-discipline=%22Computer+Science%22&facet-start-year=2015".format(page))
 
-    # Journal of Supercomp.
-    #for page in range(1, 72):
-    #    urls.append("https://link.springer.com/search/page/{0}?date-facet-mode=between&facet-journal-id=11227&facet-end-year=2018&query=&facet-discipline=%22Computer+Science%22&facet-start-year=2015".format(page))
+    # The Journal of Supercomputing
+    # urls += springer_journal(11227, range(71, 75), range(1, 13))
 
     # Parallel Computing
     #for vol in range(41, 82):
@@ -83,40 +94,60 @@ def main():
     #    urls.append("https://www.sciencedirect.com/journal/journal-of-parallel-and-distributed-computing/vol/{0}/suppl/C".format(vol))
 
     # International Journal of Parallel Programming
-    #for vol in range(43, 47):
-    #    for issue in range(1, 7):
-    #        urls.append("https://link.springer.com/journal/10766/{0}/{1}/page/1".format(vol, issue))
+    #urls += springer_journal(10766, range(43, 47), range(1, 7))
 
     # Distributed Computing
-    #for vol in range(28, 32):
-    #    for issue in range(1, 7):
-    #        urls.append("https://link.springer.com/journal/446/{0}/{1}/page/1".format(vol, issue))
+    #urls += springer_journal(446, range(28, 32), range(1, 7))
 
     # Cluster Computing
-    #for vol in range(18, 22):
-    #    for issue in range(1, 5):
-    #        urls.append("https://link.springer.com/journal/10586/{0}/{1}/page/1".format(vol, issue))
-    #        urls.append("https://link.springer.com/journal/10586/{0}/{1}/page/2".format(vol, issue))
-    #        urls.append("https://link.springer.com/journal/10586/{0}/{1}/page/3".format(vol, issue))
-    #        urls.append("https://link.springer.com/journal/10586/{0}/{1}/page/4".format(vol, issue))
+    #urls += springer_journal(10586, range(18, 22), range(1, 5), range(1, 5))
 
     # Computing
-    #for vol in range(97, 101):
-    #    for issue in range(1, 13):
-    #        urls.append("https://link.springer.com/journal/607/{0}/{1}/page/1".format(vol, issue))
+    #urls += springer_journal(607, range(97, 101), range(1, 13))
 
     # Journal of Grid Computing
-    #for vol in range(13, 17):
-    #    for issue in range(1, 5):
-    #        urls.append("https://link.springer.com/journal/10723/{0}/{1}/page/1".format(vol, issue))
+    #urls += springer_journal(10723, range(13, 17), range(1, 5))
 
     # Journal of Big Data
-    #for vol in range(1, 6):
-    #    urls.append("https://link.springer.com/journal/40537/{0}/1/page/1".format(vol))
+    #urls += springer_journal(40537, range(1, 6), range(1, 2))
 
-    #extract_emails_multiple(SpringerCrawler(), urls, listeners)
+    # Distributed and Parallel Databases
+    urls += springer_journal(10619, range(33, 37), range(1, 5))
 
-    extract_emails(get_crawler(url, options), url, listeners)
+    # Knowledge and Information Systems
+    urls += springer_journal(10115, range(42, 58), range(1, 4))
+
+    # Journal of Cloud Computing
+    urls += springer_journal(13677, range(1, 8), range(1, 2))
+
+    # Journal of Ambient Intelligence and Humanized Computing
+    urls += springer_journal(12652, range(6, 10), range(1, 7))
+
+    # New Generation Computing
+    urls += springer_journal(354, range(33, 37), range(1, 5))
+
+    # Journal of Applied Mathematics and Computing
+    urls += springer_journal(12190, range(47, 59), range(1, 2))
+
+    # Applicable Algebra in Engineering, Communication and Computing
+    urls += springer_journal(200, range(26, 30), range(1, 7))
+
+    # Computing and Visualization in Science
+    urls += springer_journal(791, range(17, 20), range(1, 7))
+
+    # Theory of Computing Systems
+    urls += springer_journal(224, range(56, 62), range(1, 5))
+    urls += springer_journal(224, range(62, 63), range(1, 9))
+
+    # Formal Aspects of Computing
+    urls += springer_journal(165, range(27, 31), range(1, 7))
+
+    # Soft Computing
+    urls += springer_journal(500, range(19, 23), range(1, 25))
+
+    extract_emails_multiple(SpringerCrawler(options), urls, listeners)
+
+    #extract_emails(get_crawler(url, options), url, listeners)
 
     merge_results(["output.txt", "emails.txt"], "emails.txt")
 

@@ -13,6 +13,7 @@ class SeleniumWebWalker(object):
     def __init__(self, options):
         super().__init__()
         self.driver = self._init_driver(options)
+        self.wait = options.get("wait")
 
     def _init_driver(self, options):
         chrome_options = webdriver.ChromeOptions()
@@ -60,6 +61,8 @@ class SeleniumWebWalker(object):
     def open(self, url):
         try:
             self.driver.get(url)
+            if self.wait:
+                time.sleep(self.wait())
             #element_present = expected_conditions.presence_of_element_located((By.TAG_NAME, 'body'))
             #WebDriverWait(self.driver, timeout=5).until(element_present)
             #self.driver.implicitly_wait(self.page_load_timeout)
