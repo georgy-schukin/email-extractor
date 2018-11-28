@@ -8,6 +8,7 @@ from listeners.file_writer import FileWriter
 
 import os.path
 import random
+import json
 
 
 def get_crawler(url, options):
@@ -60,56 +61,61 @@ def springer_journal(journal_id, volumes, issues, pages=range(1, 2)):
     return urls
 
 
-def main():
-    listeners = [Logger(), FileWriter("output.txt")]
-
-    options = {
-        "extensions": ["/home/georgy/.config/google-chrome/Default/Extensions/cfhdojbkjhnklbpkdaibdccddilifddb/3.4.1_1/"],
-        "no-images": True,
-        "proxy": "176.106.18.60:40912",
-        "wait": lambda: random.randint(0, 2)
-    }
-
-    #url = input("Input url: ")
-
+def sd_journal(crawler, journal_name, journal_id, volumes, issues=None, parts=None):
+    crawler.add_patterns(['/science/article/pii/{0}'.format(journal_id)])
     urls = []
+    for vol in volumes:
+        if issues:
+            for issue in issues:
+                urls.append("https://www.sciencedirect.com/journal/{0}/vol/{1}/issue/{2}".
+                            format(journal_name, vol, issue))
+        elif parts:
+            for part in parts:
+                urls.append("https://www.sciencedirect.com/journal/{0}/vol/{1}/part/{2}".
+                            format(journal_name, vol, part))
+        else:
+            urls.append("https://www.sciencedirect.com/journal/{0}/vol/{1}/suppl/C".
+                        format(journal_name, vol))
+    return urls
 
-    # Comm. in Computer
-    #for page in range(1, 8):
-    #    urls.append("https://link.springer.com/search/page/{0}?facet-content-type=%22Book%22&date-facet-mode=between&previous-end-year=2019&previous-start-year=2015&facet-series=%227899%22&facet-end-year=2018&facet-sub-discipline=%22Information+Systems+Applications+%28incl.+Internet%29%22&facet-discipline=%22Computer+Science%22&facet-start-year=2015".format(page))
+
+def load_options(filename):
+    if not os.path.exists(filename):
+        return {}
+    with open(filename, "r") as f:
+        return json.load(f)
+
+
+def crawl_springer(listeners, options):
+    urls = []
+    # Communications in Computer and Information Science
+    for page in range(1, 8):
+        urls.append("https://link.springer.com/search/page/{0}?facet-content-type=%22Book%22&date-facet-mode=between&previous-end-year=2019&previous-start-year=2015&facet-series=%227899%22&facet-end-year=2018&facet-sub-discipline=%22Information+Systems+Applications+%28incl.+Internet%29%22&facet-discipline=%22Computer+Science%22&facet-start-year=2015".format(page))
 
     # LNCS
-    #for page in range(1, 18):
-    #    urls.append("https://link.springer.com/search/page/{0}?facet-sub-discipline=%22Computer+Communication+Networks%22&facet-content-type=%22Book%22&date-facet-mode=between&facet-content-type=%22ConferenceProceedings%22&facet-series=%22558%22&facet-language=%22En%22&sortOrder=newestFirst&facet-end-year=2018&facet-sub-discipline=%22Information+Systems+Applications+%28incl.+Internet%29%22&facet-discipline=%22Computer+Science%22&facet-start-year=2015".format(page))
+    for page in range(1, 18):
+        urls.append("https://link.springer.com/search/page/{0}?facet-sub-discipline=%22Computer+Communication+Networks%22&facet-content-type=%22Book%22&date-facet-mode=between&facet-content-type=%22ConferenceProceedings%22&facet-series=%22558%22&facet-language=%22En%22&sortOrder=newestFirst&facet-end-year=2018&facet-sub-discipline=%22Information+Systems+Applications+%28incl.+Internet%29%22&facet-discipline=%22Computer+Science%22&facet-start-year=2015".format(page))
 
     # The Journal of Supercomputing
-    # urls += springer_journal(11227, range(71, 75), range(1, 13))
-
-    # Parallel Computing
-    #for vol in range(41, 82):
-    #    urls.append("https://www.sciencedirect.com/journal/parallel-computing/vol/{0}/suppl/C".format(vol))
-
-    # Journal of Parallel and Distributed Computing
-    #for vol in range(70, 126):
-    #    urls.append("https://www.sciencedirect.com/journal/journal-of-parallel-and-distributed-computing/vol/{0}/suppl/C".format(vol))
+    urls += springer_journal(11227, range(71, 75), range(1, 13))
 
     # International Journal of Parallel Programming
-    #urls += springer_journal(10766, range(43, 47), range(1, 7))
+    urls += springer_journal(10766, range(43, 47), range(1, 7))
 
     # Distributed Computing
-    #urls += springer_journal(446, range(28, 32), range(1, 7))
+    urls += springer_journal(446, range(28, 32), range(1, 7))
 
     # Cluster Computing
-    #urls += springer_journal(10586, range(18, 22), range(1, 5), range(1, 5))
+    urls += springer_journal(10586, range(18, 22), range(1, 5), range(1, 5))
 
     # Computing
-    #urls += springer_journal(607, range(97, 101), range(1, 13))
+    urls += springer_journal(607, range(97, 101), range(1, 13))
 
     # Journal of Grid Computing
-    #urls += springer_journal(10723, range(13, 17), range(1, 5))
+    urls += springer_journal(10723, range(13, 17), range(1, 5))
 
     # Journal of Big Data
-    #urls += springer_journal(40537, range(1, 6), range(1, 2))
+    urls += springer_journal(40537, range(1, 6), range(1, 2))
 
     # Distributed and Parallel Databases
     urls += springer_journal(10619, range(33, 37), range(1, 5))
@@ -147,7 +153,60 @@ def main():
 
     extract_emails_multiple(SpringerCrawler(options), urls, listeners)
 
-    #extract_emails(get_crawler(url, options), url, listeners)
+
+def crawl_sd(listeners, options):
+    crawler = ScienceDirectCrawler(options)
+    crawler.set_patterns([])
+
+    urls = []
+
+    # Parallel Computing
+    # urls += sd_journal(crawler, "parallel-computing", "S01678191", range(41, 82))
+
+    # Journal of Parallel and Distributed Computing
+    # urls += sd_journal(crawler, "journal-of-parallel-and-distributed-computing", "S07437315", range(70, 126))
+
+    # Big Data Research
+    urls += sd_journal(crawler, "big-data-research", "S22145796", range(1, 2))
+    urls += sd_journal(crawler, "big-data-research", "S22145796", range(2, 3), issues=range(1, 5))
+    urls += sd_journal(crawler, "big-data-research", "S22145796", range(3, 14))
+
+    # Future Generation Computer Systems
+    urls += sd_journal(crawler, "future-generation-computer-systems", "S0167739X", range(42, 78))
+    urls += sd_journal(crawler, "future-generation-computer-systems", "S0167739X", range(78, 80), parts=['P1', 'P2', 'P3'])
+    urls += sd_journal(crawler, "future-generation-computer-systems", "S0167739X", range(80, 95))
+
+    # Theoretical Computer Science
+    urls += sd_journal(crawler, "theoretical-computer-science", "S03043975", range(561, 562), parts=['PA', 'PB'])
+    urls += sd_journal(crawler, "theoretical-computer-science", "S03043975", range(562, 607))
+    urls += sd_journal(crawler, "theoretical-computer-science", "S03043975", range(607, 610), parts=['P1', 'P2', 'P3'])
+    urls += sd_journal(crawler, "theoretical-computer-science", "S03043975", range(610, 611), parts=['PA', 'PB'])
+    urls += sd_journal(crawler, "theoretical-computer-science", "S03043975", range(611, 654))
+    urls += sd_journal(crawler, "theoretical-computer-science", "S03043975", range(654, 659), parts=['PA', 'PB'])
+    urls += sd_journal(crawler, "theoretical-computer-science", "S03043975", range(659, 754))
+
+    # Electronic Notes in Theoretical Computer Science
+    urls += sd_journal(crawler, "electronic-notes-in-theoretical-computer-science", "S15710661", range(310, 341))
+
+    # Data & Knowledge Engineering
+    urls += sd_journal(crawler, "data-and-knowledge-engineering", "S0169023X", range(95, 100))
+    urls += sd_journal(crawler, "data-and-knowledge-engineering", "S0169023X", range(100, 101), parts=['PA', 'PB'])
+    urls += sd_journal(crawler, "data-and-knowledge-engineering", "S0169023X", range(101, 119))
+
+    extract_emails_multiple(crawler, urls, listeners)
+
+
+def main():
+    listeners = [Logger(), FileWriter("output.txt")]
+
+    options = load_options("config.txt")
+    options["wait"] = lambda: random.randint(1, 10)
+
+    # url = input("Input url: ")
+    # extract_emails(get_crawler(url, options), url, listeners)
+
+    # crawl_springer(listeners, options)
+    crawl_sd(listeners, options)
 
     merge_results(["output.txt", "emails.txt"], "emails.txt")
 

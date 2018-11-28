@@ -17,13 +17,19 @@ class EmailCrawler(object):
         self.patterns = [re.compile(pattern) for pattern in patterns]
 
     def add_patterns(self, patterns):
-        self.patterns += [re.compile(pattern) for pattern in patterns]
+        for pattern in patterns:
+            pattern_c = re.compile(pattern)
+            if pattern_c not in self.patterns:
+                self.patterns.append(pattern_c)
 
     def set_skip_patterns(self, patterns):
         self.skip_patterns = [re.compile(pattern) for pattern in patterns]
 
     def add_skip_patterns(self, patterns):
-        self.skip_patterns += [re.compile(pattern) for pattern in patterns]
+        for pattern in patterns:
+            pattern_c = re.compile(pattern)
+            if pattern_c not in self.skip_patterns:
+                self.skip_patterns.append(pattern_c)
 
     def set_logging(self, logging):
         self.logging = logging
