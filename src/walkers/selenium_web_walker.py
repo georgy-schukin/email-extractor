@@ -52,7 +52,7 @@ class SeleniumWebWalker(object):
 
     def set_page_load_timeout(self, page_load_timeout):
         self.driver.set_page_load_timeout(page_load_timeout)
-        self.page_load_timeout = page_load_timeout
+        #self.page_load_timeout = page_load_timeout
 
     def close(self):
         if self.driver:
@@ -67,8 +67,9 @@ class SeleniumWebWalker(object):
             #WebDriverWait(self.driver, timeout=5).until(element_present)
             #self.driver.implicitly_wait(self.page_load_timeout)
             #time.sleep(random.randint(0, 2))
+            return True
         except TimeoutException:
-            pass
+            return False
             #raise Exception("Page load timeout: " + url)
 
     def get_current_page_url(self):

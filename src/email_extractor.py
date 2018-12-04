@@ -62,7 +62,7 @@ def springer_journal(journal_id, volumes, issues, pages=range(1, 2)):
 
 
 def sd_journal(crawler, journal_name, journal_id, volumes, issues=None, parts=None):
-    crawler.add_patterns(['/science/article/pii/{0}'.format(journal_id)])
+    crawler.add_pattern('/science/article/pii/{0}'.format(journal_id), terminal=True)
     urls = []
     for vol in volumes:
         if issues:
@@ -156,15 +156,15 @@ def crawl_springer(listeners, options):
 
 def crawl_sd(listeners, options):
     crawler = ScienceDirectCrawler(options)
-    crawler.set_patterns([])
+    crawler.clear_patterns()
 
     urls = []
 
     # Parallel Computing
-    # urls += sd_journal(crawler, "parallel-computing", "S01678191", range(41, 82))
+    urls += sd_journal(crawler, "parallel-computing", "S01678191", range(41, 82))
 
     # Journal of Parallel and Distributed Computing
-    # urls += sd_journal(crawler, "journal-of-parallel-and-distributed-computing", "S07437315", range(70, 126))
+    urls += sd_journal(crawler, "journal-of-parallel-and-distributed-computing", "S07437315", range(70, 126))
 
     # Big Data Research
     urls += sd_journal(crawler, "big-data-research", "S22145796", range(1, 2))
@@ -200,13 +200,13 @@ def main():
     listeners = [Logger(), FileWriter("output.txt")]
 
     options = load_options("config.txt")
-    options["wait"] = lambda: random.randint(1, 10)
+    options["wait"] = lambda: random.randint(0, 4)
 
-    # url = input("Input url: ")
-    # extract_emails(get_crawler(url, options), url, listeners)
+    url = input("Input url: ")
+    extract_emails(get_crawler(url, options), url, listeners)
 
     # crawl_springer(listeners, options)
-    crawl_sd(listeners, options)
+    # crawl_sd(listeners, options)
 
     merge_results(["output.txt", "emails.txt"], "emails.txt")
 
