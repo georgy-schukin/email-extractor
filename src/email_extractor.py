@@ -200,7 +200,7 @@ def main():
     listeners = [Logger(), FileWriter("output.txt")]
 
     options = load_options("config.txt")
-    options["wait"] = lambda: random.randint(0, 4)
+    options["wait"] = lambda: random.randint(0, options.get("delay")) if "delay" in options else None
 
     url = input("Input url: ")
     extract_emails(get_crawler(url, options), url, listeners)
