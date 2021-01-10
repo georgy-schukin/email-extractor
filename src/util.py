@@ -18,12 +18,12 @@ def merge_results(input_files, output_file):
     for input_file in input_files:
         for line in read_lines(input_file):
             lines.add(line)
-    write_lines(output_file, list(lines))
+    write_lines(output_file, sorted(list(lines)))
 
 
 def subtract_results(input_file, subtract_files, output_file):
     lines = set(read_lines(input_file))
     for sub_file in subtract_files:
         for line in read_lines(sub_file):
-            lines.remove(line)
-    write_lines(output_file, list(lines))
+            lines.discard(line)
+    write_lines(output_file, sorted(list(lines)))

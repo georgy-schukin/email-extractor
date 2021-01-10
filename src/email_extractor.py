@@ -191,13 +191,11 @@ def main():
 
     visited_urls = read_lines("urls.txt")
 
-    #url = input("Input url: ")
-    #extract_emails(get_crawler(url, options), url, listeners, visited_urls)
+    url = input("Input url: ")
+    extract_emails(get_crawler(url, options), url, listeners, visited_urls)
 
     # crawl_springer(listeners, options, visited_urls)
-    crawl_sd(listeners, options, visited_urls)
-
-    #merge_results(["output.txt", "emails.txt"], "emails.txt")
+    # crawl_sd(listeners, options, visited_urls)
 
     print('Done')
 
