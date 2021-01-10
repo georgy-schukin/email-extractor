@@ -45,15 +45,16 @@ class EmailCrawler(object):
     def set_page_load_timeout(self, page_load_timeout):
         self.walker.set_page_load_timeout(page_load_timeout)
 
-    def crawl(self, start_url, listeners):
+    def crawl(self, start_url, listeners, visited=()):
         emails = set()
-        urls_to_visit = set()
-        visited_urls = set()
-        urls_to_visit.add(start_url)
+        urls_to_visit = [start_url]
+        visited_urls = set(visited)
         for listener in listeners:
             listener.notify_start()
         while len(urls_to_visit) > 0:
             url = urls_to_visit.pop()
+            if url in visited_urls:
+                continue
             for listener in listeners:
                 listener.notify_url(url)
             try:
@@ -68,11 +69,13 @@ class EmailCrawler(object):
                 emails.add(email)
                 for listener in listeners:
                     listener.notify_email(email)
+            for listener in listeners:
+                listener.notify_url_end(url)
             if self._is_terminal(self.walker.get_current_page_url()):
                 continue
             for u in found_urls:
                 if u not in visited_urls:
-                    urls_to_visit.add(u)
+                    urls_to_visit.append(u)
         for listener in listeners:
             listener.notify_end()
         return list(emails), list(visited_urls)

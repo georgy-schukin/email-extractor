@@ -11,5 +11,8 @@ class Logger(object):
     def notify_url(self, url):
         print("URL: " + url)
 
+    def notify_url_end(self, url):
+        pass
+
     def notify_email(self, email):
         print("Email: " + email)

@@ -61,7 +61,7 @@ class SeleniumWebWalker(object):
     def open(self, url):
         try:
             self.driver.get(url)
-            if self.wait:
+            if self.wait is not None:
                 time.sleep(self.wait())
             #element_present = expected_conditions.presence_of_element_located((By.TAG_NAME, 'body'))
             #WebDriverWait(self.driver, timeout=5).until(element_present)

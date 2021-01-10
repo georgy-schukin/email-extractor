@@ -1,4 +1,4 @@
-class FileWriter(object):
+class URLLogger(object):
     def __init__(self, filename):
         super().__init__()
         self.filename = filename
@@ -14,8 +14,10 @@ class FileWriter(object):
         pass
 
     def notify_url_end(self, url):
-        pass
+        self.output.write(url + "\n")
+        self.output.flush()
 
     def notify_email(self, email):
-        self.output.write(email + "\n")
-        self.output.flush()
+        pass
+
+
